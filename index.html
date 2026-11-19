@@ -150,6 +150,8 @@
       <div class="space-y-1">
         <div class="text-[11px] text-slate-500 px-1">🎭 寄居蟹趣味互動</div>
         <div class="grid grid-cols-2 gap-1.5">
+          <button data-event="soccer" class="eco-event-btn py-1.5 px-2 rounded-xl bg-lime-50 hover:bg-lime-100 text-lime-800 text-[11px]">⚽ 沙灘足球</button>
+          <button data-event="volleyball" class="eco-event-btn py-1.5 px-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 text-[11px]">🏐 沙灘排球</button>
           <button data-event="freezeGame" class="eco-event-btn py-1.5 px-2 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-800 text-[11px]">🛑 123木頭人</button>
           <button data-event="pyramid" class="eco-event-btn py-1.5 px-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px]">🗼 疊羅漢</button>
           <button data-event="hideAndSeek" class="eco-event-btn py-1.5 px-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px]">🙈 捉迷藏</button>
@@ -200,14 +202,29 @@
           </div>
           <p id="crabModalNextHint" class="text-[11px] text-amber-700 font-medium"></p>
         </div>
-        <div id="dreamShellPicker" class="hidden mb-4">
+        <div id="dreamShellPicker" class="hidden mb-3">
           <div class="text-xs font-extrabold text-purple-800 mb-1.5">✨ 挑選你的「100 天最高級豪華新家」：</div>
           <div id="dreamShellOptions" class="grid grid-cols-2 gap-2"></div>
         </div>
-        <button id="btnFeedCrab" class="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm shadow-md active:scale-95 transition flex items-center justify-center gap-2">
-          <span>🍎</span>
-          <span id="btnFeedText">按時交功課！餵食一次</span>
-        </button>
+
+        <!-- 貝殼飾品裝扮 -->
+        <div class="mb-3">
+          <div class="text-[11px] font-extrabold text-amber-800 mb-1">🎀 課堂表現飾品裝扮：</div>
+          <div id="accessoryOptions" class="grid grid-cols-5 gap-1.5 text-[11px] font-bold"></div>
+        </div>
+
+        <div class="flex gap-2">
+          <button id="btnFeedCrab" class="flex-1 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm shadow-md active:scale-95 transition flex items-center justify-center gap-1.5">
+            <span>🍎</span>
+            <span id="btnFeedText">餵食一次</span>
+          </button>
+          <button id="btnBrushCrab" title="幫寄居蟹刷殼洗澡冒泡泡" class="px-3 py-3 rounded-2xl bg-cyan-100 hover:bg-cyan-200 text-cyan-800 font-black text-sm active:scale-95 transition">
+            🫧 洗澡
+          </button>
+          <button id="btnCheerCrab" title="幫寄居蟹拍拍鼓勵跳高高" class="px-3 py-3 rounded-2xl bg-pink-100 hover:bg-pink-200 text-pink-700 font-black text-sm active:scale-95 transition">
+            💖 鼓勵
+          </button>
+        </div>
       </div>
     </div>
 
@@ -265,15 +282,6 @@
         </div>
 
         <div class="space-y-2">
-          <button id="btnSimNextDay" class="w-full py-2.5 px-3 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs shadow-sm">
-            📅 模擬進入「明天」（觀察日期潮汐變化 & 解鎖餵食）
-          </button>
-          <button id="btnBoost5Days" class="w-full py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-sm">
-            ⚡ 示範：全班連續天數 +5 天（換殼升級）
-          </button>
-          <button id="btnBoost100Days" class="w-full py-2.5 px-3 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-bold text-xs shadow-sm">
-            👑 示範：全班達 100 天（自選頂級豪華新家）
-          </button>
           <button id="btnClearSand" class="w-full py-2.5 px-3 rounded-xl bg-cyan-100 hover:bg-cyan-200 text-cyan-900 font-bold text-xs">
             🌊 立即清空沙灘字畫
           </button>
@@ -574,7 +582,8 @@
             role: isTeacher ? 'teacher' : (isBoy ? 'boy' : 'girl'),
             streak: isTeacher ? 100 : (prev ? prev.streak : 0),
             lastFedDate: isTeacher ? null : (prev ? prev.lastFedDate : null),
-            dreamShellId: prev ? prev.dreamShellId : LUXURY_100_SHELLS[0].id
+            dreamShellId: prev ? prev.dreamShellId : LUXURY_100_SHELLS[0].id,
+            accessory: prev ? (prev.accessory || 'none') : 'none'
           });
         }
         return list;
@@ -597,6 +606,7 @@
               target.streak = saved.streak ?? 0;
               target.lastFedDate = saved.lastFedDate ?? null;
               target.dreamShellId = saved.dreamShellId || LUXURY_100_SHELLS[0].id;
+              target.accessory = saved.accessory || 'none';
             }
           });
         }
@@ -623,7 +633,8 @@
               id: c.id,
               streak: c.streak,
               lastFedDate: c.lastFedDate,
-              dreamShellId: c.dreamShellId
+              dreamShellId: c.dreamShellId,
+              accessory: c.accessory || 'none'
             }))
           }));
         } catch (e) {}
@@ -930,6 +941,120 @@
       waterMesh.position.set(0, 0.3, 21);
       scene.add(waterMesh);
 
+      // 沙灘運動器材：3D 足球 + 3D 排球 + 排球網
+      const sportGroup = new THREE.Group();
+      scene.add(sportGroup);
+
+      const soccerBall = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(0.42, 1),
+        new THREE.MeshStandardMaterial({ color: '#f8fafc', roughness: 0.4, flatShading: true })
+      );
+      soccerBall.castShadow = true;
+      soccerBall.visible = false;
+      sportGroup.add(soccerBall);
+
+      const volleyball = new THREE.Mesh(
+        new THREE.SphereGeometry(0.38, 16, 12),
+        new THREE.MeshStandardMaterial({ color: '#fde047', roughness: 0.35 })
+      );
+      volleyball.castShadow = true;
+      volleyball.visible = false;
+      sportGroup.add(volleyball);
+
+      const vbNetGroup = new THREE.Group();
+      const postMat = new THREE.MeshStandardMaterial({ color: '#78350f', roughness: 0.8 });
+      const netMat = new THREE.MeshStandardMaterial({ color: '#f8fafc', transparent: true, opacity: 0.7, side: THREE.DoubleSide, wireframe: true });
+      const postL = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.8, 8), postMat);
+      postL.position.set(0, 1.4, -3.5);
+      const postR = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.8, 8), postMat);
+      postR.position.set(0, 1.4, 3.5);
+      const netMesh = new THREE.Mesh(new THREE.PlaneGeometry(7.0, 1.3, 12, 4), netMat);
+      netMesh.rotation.y = Math.PI / 2;
+      netMesh.position.set(0, 2.0, 0);
+      vbNetGroup.add(postL, postR, netMesh);
+      vbNetGroup.position.set(0, getSandHeightAt(0, 1.5), 1.5);
+      vbNetGroup.visible = false;
+      sportGroup.add(vbNetGroup);
+
+      const ACCESSORIES = [
+        { id: 'none', label: '無', icon: '✖️' },
+        { id: 'glasses', label: '墨鏡', icon: '🕶️' },
+        { id: 'star', label: '海星', icon: '⭐' },
+        { id: 'bag', label: '草編包', icon: '🎒' },
+        { id: 'flower', label: '花朵', icon: '🌸' }
+      ];
+
+      // 小組沙堡競賽 (4 組沙堡隨該組今日餵食率長高！)
+      const sandCastles = [];
+      function buildTeamSandCastles() {
+        const sandCastleMat = new THREE.MeshStandardMaterial({ color: '#e6c280', roughness: 0.9 });
+        const flagColors = ['#38bdf8', '#34d399', '#fb7185', '#a855f7'];
+        [-15, -5, 5, 15].forEach((cx, i) => {
+          const cz = -8.6;
+          const group = new THREE.Group();
+          const base = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 1.3, 0.7, 10), sandCastleMat);
+          base.position.y = 0.35;
+          base.castShadow = true;
+          const tower = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.7, 0.9, 10), sandCastleMat);
+          tower.position.y = 1.05;
+          tower.castShadow = true;
+          const roof = new THREE.Mesh(new THREE.ConeGeometry(0.65, 0.65, 10), new THREE.MeshStandardMaterial({ color: flagColors[i], roughness: 0.6 }));
+          roof.position.y = 1.8;
+          roof.castShadow = true;
+          group.add(base, tower, roof);
+          group.position.set(cx, getSandHeightAt(cx, cz), cz);
+          group.scale.setScalar(0.45);
+          scene.add(group);
+          sandCastles.push({ group, teamIdx: i, targetScale: 0.45 });
+        });
+      }
+      buildTeamSandCastles();
+
+      function updateTeamSandCastles() {
+        const students = state.crabs.filter((c) => c.role !== 'teacher');
+        const perTeam = Math.max(1, Math.ceil(students.length / 4));
+        sandCastles.forEach((sc, idx) => {
+          const slice = students.slice(idx * perTeam, (idx + 1) * perTeam);
+          const fed = slice.filter((c) => c.lastFedDate === state.currentDate).length;
+          const ratio = slice.length > 0 ? fed / slice.length : 0;
+          sc.targetScale = 0.45 + ratio * 0.95;
+        });
+      }
+
+      // 沙灘尋寶物件 (漂流瓶 / 珍珠)
+      const treasureGroup = new THREE.Group();
+      const bottleMesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.18, 0.22, 0.72, 10),
+        new THREE.MeshStandardMaterial({ color: '#34d399', transparent: true, opacity: 0.85, roughness: 0.15 })
+      );
+      bottleMesh.rotation.z = Math.PI / 2.3;
+      bottleMesh.position.y = 0.22;
+      const treasureHit = new THREE.Mesh(new THREE.SphereGeometry(0.9, 8, 8), new THREE.MeshBasicMaterial({ visible: false }));
+      treasureHit.userData = { isTreasure: true };
+      treasureGroup.add(bottleMesh, treasureHit);
+      treasureGroup.visible = false;
+      scene.add(treasureGroup);
+      let treasureTimer = 8;
+
+      // 洗澡泡泡粒子
+      const soapBubbles = [];
+      function spawnSoapBubbles(x, y, z) {
+        const bMat = new THREE.MeshStandardMaterial({ color: '#e0f2fe', transparent: true, opacity: 0.75, roughness: 0.1 });
+        const bGeo = new THREE.SphereGeometry(0.16, 10, 8);
+        for (let i = 0; i < 14; i++) {
+          const m = new THREE.Mesh(bGeo, bMat);
+          m.position.set(x + (Math.random() - 0.5) * 1.4, y + 0.4 + Math.random() * 0.8, z + (Math.random() - 0.5) * 1.2);
+          m.scale.setScalar(0.5 + Math.random() * 0.9);
+          scene.add(m);
+          soapBubbles.push({ mesh: m, vy: 1.2 + Math.random() * 1.4, life: 1.6 });
+        }
+      }
+
+      const ballState = {
+        x: 0, y: 0.5, z: 1.5,
+        vx: 5.5, vy: 2.0, vz: 3.2
+      };
+
       // ==========================================
       // 5. 海鳥與沙灘螃蟹
       // ==========================================
@@ -1117,6 +1242,29 @@
         badge.position.set(0, 1.12, 0);
         shellGroup.add(badge);
 
+        // 課堂表現飾品
+        const acc = arguments[4] || 'none';
+        if (acc === 'glasses') {
+          const gMat = new THREE.MeshStandardMaterial({ color: '#0f172a', roughness: 0.1 });
+          const l1 = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.08, 0.05), gMat);
+          l1.position.set(-0.09, 0.36, 0.54);
+          const l2 = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.08, 0.05), gMat);
+          l2.position.set(0.09, 0.36, 0.54);
+          shellGroup.add(l1, l2);
+        } else if (acc === 'star') {
+          const star = new THREE.Mesh(new THREE.OctahedronGeometry(0.14, 0), new THREE.MeshStandardMaterial({ color: '#facc15', roughness: 0.3 }));
+          star.position.set(0.28, 0.76, 0.05);
+          shellGroup.add(star);
+        } else if (acc === 'bag') {
+          const bag = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.24, 0.16), new THREE.MeshStandardMaterial({ color: '#65a30d', roughness: 0.85 }));
+          bag.position.set(-0.38, 0.28, 0.06);
+          shellGroup.add(bag);
+        } else if (acc === 'flower') {
+          const fl = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), new THREE.MeshStandardMaterial({ color: '#ec4899', roughness: 0.4 }));
+          fl.position.set(-0.26, 0.74, 0.1);
+          shellGroup.add(fl);
+        }
+
         return shellGroup;
       }
 
@@ -1197,7 +1345,7 @@
         root.add(bodyGroup);
 
         const shellHolder = new THREE.Group();
-        shellHolder.add(build3DShellGroup(getShellForCrab(crabData), crabData.id, isTeacher, crabData.role));
+        shellHolder.add(build3DShellGroup(getShellForCrab(crabData), crabData.id, isTeacher, crabData.role, crabData.accessory));
         root.add(shellHolder);
 
         const statusSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: sleepTex, transparent: true, opacity: 0 }));
@@ -1255,7 +1403,7 @@
         const cg = crabGroups.find((g) => g.id === crabId);
         if (!crabData || !cg) return;
         while (cg.shellHolder.children.length > 0) cg.shellHolder.remove(cg.shellHolder.children[0]);
-        cg.shellHolder.add(build3DShellGroup(getShellForCrab(crabData), crabData.id, crabData.role === 'teacher', crabData.role));
+        cg.shellHolder.add(build3DShellGroup(getShellForCrab(crabData), crabData.id, crabData.role === 'teacher', crabData.role, crabData.accessory));
       }
 
       function rebuildAllCrabShells() {
@@ -1275,13 +1423,45 @@
       // ==========================================
       function triggerEcoEvent(eventName) {
         state.ecoEvent = eventName;
-        state.ecoTimer = 14;
+        state.ecoTimer = 16;
+        soccerBall.visible = eventName === 'soccer';
+        volleyball.visible = eventName === 'volleyball';
+        vbNetGroup.visible = eventName === 'volleyball';
+        ballState.x = 0; ballState.z = 1.5; ballState.y = 1.5;
+        ballState.vx = 5.5; ballState.vy = 3.5; ballState.vz = 3.2;
+
         crabGroups.forEach((cg) => {
           cg.targetYOffset = 0;
           cg.tucked = false;
           cg.frozen = false;
           cg.statusSprite.material.opacity = 0;
         });
+
+        if (eventName === 'soccer') {
+          showToast('⚽ 沙灘足球賽開踢！寄居蟹分成兩隊，老師也來當裁判兼前鋒！');
+          crabGroups.forEach((cg, idx) => {
+            if (cg.role === 'teacher') {
+              cg.targetX = 0;
+              cg.targetZ = -3.2;
+            } else {
+              const side = idx % 2 === 0 ? -1 : 1;
+              cg.targetX = side * (3 + (idx % 5) * 2.2);
+              cg.targetZ = -1.5 + Math.floor((idx % 10) / 2) * 1.5;
+            }
+          });
+        } else if (eventName === 'volleyball') {
+          showToast('🏐 沙灘排球大賽！左右兩隊寄居蟹輪流跳起來殺球！');
+          crabGroups.forEach((cg, idx) => {
+            if (cg.role === 'teacher') {
+              cg.targetX = 0;
+              cg.targetZ = -3.6;
+            } else {
+              const side = idx % 2 === 0 ? -1 : 1;
+              cg.targetX = side * (2.5 + (idx % 4) * 2.1);
+              cg.targetZ = -1.0 + (idx % 3) * 2.2;
+            }
+          });
+        }
 
         if (eventName === 'freezeGame') {
           showToast('🛑 123 木頭人！老師喊停，大家快定格！');
@@ -1348,6 +1528,9 @@
 
       function resetToTimeOfDayBehavior() {
         state.ecoEvent = null;
+        soccerBall.visible = false;
+        volleyball.visible = false;
+        vbNetGroup.visible = false;
         crabGroups.forEach((cg, idx) => {
           cg.targetX = cg.homeX;
           cg.targetZ = cg.homeZ;
@@ -1547,8 +1730,22 @@
         } else if (state.tool === 'interact' && !pointerMoved) {
           updatePointerNDC(clientX, clientY);
           raycaster.setFromCamera(pointer, camera);
-          const hits = raycaster.intersectObjects(crabHitMeshes);
-          if (hits.length > 0) openCrabModal(hits[0].object.userData.crabId);
+          const tHits = treasureGroup.visible ? raycaster.intersectObject(treasureHit) : [];
+          if (tHits.length > 0) {
+            treasureGroup.visible = false;
+            treasureTimer = 14 + Math.random() * 12;
+            const students = crabGroups.filter((g) => g.role !== 'teacher');
+            const lucky = students[Math.floor(Math.random() * students.length)];
+            if (lucky) {
+              lucky.happyTimer = 2.6;
+              spawnSoapBubbles(lucky.root.position.x, lucky.root.position.y, lucky.root.position.z);
+              showToast(`🍾 撿到海浪帶來的驚喜漂流瓶！送給 ${lucky.id} 號同學祝福大禮！`);
+            }
+            audio.playUpgrade();
+          } else {
+            const hits = raycaster.intersectObjects(crabHitMeshes);
+            if (hits.length > 0) openCrabModal(hits[0].object.userData.crabId);
+          }
         }
         isPointerDown = false;
         activeStroke = null;
@@ -1605,7 +1802,7 @@
             autoEventClock = 0;
             const pool = state.timeOfDay === 'night'
               ? ['huddle', 'playWater']
-              : ['freezeGame', 'pyramid', 'hideAndSeek', 'playWater', 'huddle'];
+              : ['soccer', 'volleyball', 'freezeGame', 'pyramid', 'hideAndSeek', 'playWater', 'huddle'];
             triggerEcoEvent(pool[Math.floor(Math.random() * pool.length)]);
           }
         }
@@ -1675,6 +1872,47 @@
           }
         });
 
+        // 老師平時也會隨機在沙灘散步、過去找學生寄居蟹互動！
+        if (!state.ecoEvent) {
+          if (typeof state.teacherWanderTimer !== 'number') state.teacherWanderTimer = 4;
+          state.teacherWanderTimer -= dt;
+          if (state.teacherWanderTimer <= 0) {
+            state.teacherWanderTimer = 5 + Math.random() * 4;
+            const teacherCg = crabGroups.find((g) => g.role === 'teacher');
+            const students = crabGroups.filter((g) => g.role !== 'teacher');
+            if (teacherCg && students.length > 0) {
+              const stu = students[Math.floor(Math.random() * students.length)];
+              teacherCg.targetX = stu.homeX + (Math.random() > 0.5 ? 2.2 : -2.2);
+              teacherCg.targetZ = Math.max(-7.5, stu.homeZ - 1.5);
+              stu.happyTimer = 1.4;
+            }
+          }
+        }
+
+        // 足球與排球物理彈跳
+        if (state.ecoEvent === 'soccer') {
+          ballState.x += ballState.vx * dt;
+          ballState.z += ballState.vz * dt;
+          if (Math.abs(ballState.x) > 12) ballState.vx *= -1;
+          if (ballState.z < -3 || ballState.z > 5.5) ballState.vz *= -1;
+          soccerBall.position.set(ballState.x, getSandHeightAt(ballState.x, ballState.z) + 0.42 + Math.abs(Math.sin(t * 7)) * 0.55, ballState.z);
+          soccerBall.rotation.z -= ballState.vx * dt * 1.8;
+          soccerBall.rotation.x += ballState.vz * dt * 1.8;
+          // 幾隻前鋒跟著球跑
+          crabGroups.forEach((cg, idx) => {
+            if (idx % 5 === 0 && cg.role !== 'teacher') {
+              cg.targetX = ballState.x + (idx % 2 === 0 ? -1.4 : 1.4);
+              cg.targetZ = ballState.z + 0.6;
+            }
+          });
+        } else if (state.ecoEvent === 'volleyball') {
+          const arc = Math.abs(Math.sin(t * 2.2));
+          ballState.x = Math.cos(t * 2.2) * 6.5;
+          ballState.z = 1.5 + Math.sin(t * 1.3) * 1.8;
+          volleyball.position.set(ballState.x, getSandHeightAt(ballState.x, ballState.z) + 1.2 + arc * 3.8, ballState.z);
+          volleyball.rotation.y += dt * 4;
+        }
+
         for (const cg of crabGroups) {
           cg.root.position.x += (cg.targetX - cg.root.position.x) * 0.03;
           cg.root.position.z += (cg.targetZ - cg.root.position.z) * 0.03;
@@ -1702,6 +1940,36 @@
           }
         }
 
+        // 小組沙堡平滑長高
+        sandCastles.forEach((sc) => {
+          const cur = sc.group.scale.x;
+          sc.group.scale.setScalar(cur + (sc.targetScale - cur) * 0.05);
+        });
+
+        // 尋寶漂流瓶定時出沒於浪花邊
+        if (!treasureGroup.visible) {
+          treasureTimer -= dt;
+          if (treasureTimer <= 0) {
+            const tx = (Math.random() - 0.5) * 26;
+            const tz = 4.5 + Math.random() * 2.2;
+            treasureGroup.position.set(tx, getSandHeightAt(tx, tz), tz);
+            treasureGroup.visible = true;
+          }
+        } else {
+          bottleMesh.position.y = 0.24 + Math.sin(t * 3) * 0.08;
+        }
+
+        // 洗澡泡泡上升消失
+        for (let i = soapBubbles.length - 1; i >= 0; i--) {
+          const b = soapBubbles[i];
+          b.mesh.position.y += b.vy * dt;
+          b.life -= dt;
+          if (b.life <= 0) {
+            scene.remove(b.mesh);
+            soapBubbles.splice(i, 1);
+          }
+        }
+
         renderer.render(scene, camera);
       }
 
@@ -1719,6 +1987,7 @@
         const fedCount = state.crabs.filter((c) => c.role !== 'teacher' && c.lastFedDate === state.currentDate).length;
         const totalStu = state.boyCount + state.girlCount;
         document.getElementById('fedProgress').textContent = `${fedCount}/${totalStu}`;
+        updateTeamSandCastles();
       }
 
       function feedCrabById(id) {
@@ -1821,8 +2090,45 @@
           feedBtn.className = 'w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm shadow-md';
           feedText.textContent = '按時交功課！餵食一次';
         }
+        const accEl = document.getElementById('accessoryOptions');
+        accEl.innerHTML = '';
+        ACCESSORIES.forEach((acc) => {
+          const btn = document.createElement('button');
+          const active = (crab.accessory || 'none') === acc.id;
+          btn.className = `py-1.5 px-1 rounded-xl border text-center transition ${
+            active ? 'border-amber-500 bg-amber-100 text-amber-900' : 'border-slate-200 bg-white text-slate-600'
+          }`;
+          btn.innerHTML = `<div class="text-sm">${acc.icon}</div><div class="text-[10px]">${acc.label}</div>`;
+          btn.addEventListener('click', () => {
+            crab.accessory = acc.id;
+            saveState();
+            rebuildCrabShell(crab.id);
+            openCrabModal(crab.id);
+            audio.playFeed();
+          });
+          accEl.appendChild(btn);
+        });
         document.getElementById('crabModal').classList.remove('hidden');
       }
+
+      document.getElementById('btnBrushCrab').addEventListener('click', () => {
+        if (state.activeCrabId == null) return;
+        const cg = crabGroups.find((g) => g.id === state.activeCrabId);
+        if (cg) {
+          cg.happyTimer = 2.0;
+          spawnSoapBubbles(cg.root.position.x, cg.root.position.y, cg.root.position.z);
+        }
+        audio.playUpgrade();
+        showToast(`🫧 幫 ${state.activeCrabId} 號刷殼洗香香，外殼閃閃發亮！`);
+      });
+
+      document.getElementById('btnCheerCrab').addEventListener('click', () => {
+        if (state.activeCrabId == null) return;
+        const cg = crabGroups.find((g) => g.id === state.activeCrabId);
+        if (cg) cg.happyTimer = 2.0;
+        audio.playFeed();
+        showToast(`💖 給 ${state.activeCrabId} 號一個大大的鼓勵！`);
+      });
 
       document.getElementById('btnFeedCrab').addEventListener('click', () => {
         if (state.activeCrabId == null) return;
@@ -2084,34 +2390,7 @@
         e.target.value = '';
       });
 
-      document.getElementById('btnSimNextDay').addEventListener('click', () => {
-        state.dayOffset += 1;
-        const d = new Date();
-        d.setDate(d.getDate() + state.dayOffset);
-        state.currentDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-        updateHeaderStats();
-        document.getElementById('teacherModal').classList.add('hidden');
-        const tide = getTideInfoForDate(state.currentDate);
-        showToast(`📅 已切換至 ${state.currentDate}（${tide.label}），全班可再次餵食！`);
-      });
 
-      document.getElementById('btnBoost5Days').addEventListener('click', () => {
-        state.crabs.forEach((c) => { if (c.role !== 'teacher') c.streak += 5; });
-        saveState();
-        rebuildAllCrabShells();
-        audio.playUpgrade();
-        document.getElementById('teacherModal').classList.add('hidden');
-        showToast('⚡ 全班連續天數 +5 天！快看看寄居蟹的新殼！');
-      });
-
-      document.getElementById('btnBoost100Days').addEventListener('click', () => {
-        state.crabs.forEach((c) => { if (c.role !== 'teacher') c.streak = Math.max(c.streak, 100); });
-        saveState();
-        rebuildAllCrabShells();
-        audio.playUpgrade();
-        document.getElementById('teacherModal').classList.add('hidden');
-        showToast('👑 全班已達 100 天！點選任一寄居蟹即可挑選最高級新家！');
-      });
 
       document.getElementById('btnClearSand').addEventListener('click', () => {
         sandStrokes.length = 0;
