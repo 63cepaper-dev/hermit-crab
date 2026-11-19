@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>3D 寫實生態沙灘寄居蟹 — 29隻班級成長與潮汐生態</title>
+  <title>3D 寫實生態沙灘寄居蟹 — 班級成長與潮汐生態</title>
   <script>
     (function () {
       try {
@@ -17,7 +17,6 @@
   </script>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script async src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
 
@@ -74,38 +73,35 @@
 </head>
 <body>
   <div id="canvas-container">
-    <!-- 頂部控制列 (手機 360px 自動緊湊不裁切，教室大屏自動放大更好按) -->
-    <header class="absolute top-2 left-2 right-2 z-20 flex flex-wrap items-center justify-between gap-1.5 pointer-events-none">
-      <!-- 左側：互動 / 寫字模式 -->
-      <div class="pointer-events-auto glass-bar rounded-full p-0.5 sm:p-1 flex items-center gap-0.5 shrink-0">
-        <button id="btnToolInteract" class="btn-tap px-2 sm:px-3 lg:px-4 py-1 lg:py-1.5 rounded-full text-xs lg:text-sm font-extrabold bg-amber-500 text-white shadow-sm whitespace-nowrap">
-          🦀<span class="hidden sm:inline ml-1">互動</span>
+    <!-- 單行極簡頂部控制列 -->
+    <header id="mainHeader" class="absolute top-2.5 left-2.5 right-2.5 z-20 flex flex-wrap items-center justify-between gap-1.5 pointer-events-none">
+      <div class="pointer-events-auto glass-bar rounded-full p-1 flex items-center gap-1 shrink-0">
+        <button id="btnToolInteract" class="btn-tap px-2.5 py-1 rounded-full text-xs lg:text-sm font-extrabold bg-amber-500 text-white shadow-sm whitespace-nowrap">
+          🦀 互動
         </button>
-        <button id="btnToolDraw" class="btn-tap px-2 sm:px-3 lg:px-4 py-1 lg:py-1.5 rounded-full text-xs lg:text-sm font-extrabold text-amber-900 hover:bg-amber-100 whitespace-nowrap">
-          ✏️<span class="hidden sm:inline ml-1">寫字</span>
+        <button id="btnToolDraw" class="btn-tap px-2.5 py-1 rounded-full text-xs lg:text-sm font-extrabold text-amber-900 hover:bg-amber-100 whitespace-nowrap">
+          ✏️ 寫字
         </button>
       </div>
 
-      <!-- 中央：4 時段切換 (清晨 / 中午 / 黃昏 / 夜晚) -->
-      <div class="pointer-events-auto glass-bar rounded-full p-0.5 sm:p-1 flex items-center gap-0.5 shrink-0">
-        <button data-time="dawn" class="time-btn btn-tap px-1.5 sm:px-2.5 lg:px-3 py-1 lg:py-1.5 rounded-full text-[11px] lg:text-sm font-bold text-slate-700 hover:bg-amber-100" title="清晨">🌅<span class="hidden md:inline ml-0.5">清晨</span></button>
-        <button data-time="noon" class="time-btn btn-tap px-1.5 sm:px-2.5 lg:px-3 py-1 lg:py-1.5 rounded-full text-[11px] lg:text-sm font-bold text-slate-700 hover:bg-sky-100" title="中午">☀️<span class="hidden md:inline ml-0.5">中午</span></button>
-        <button data-time="sunset" class="time-btn btn-tap px-1.5 sm:px-2.5 lg:px-3 py-1 lg:py-1.5 rounded-full text-[11px] lg:text-sm font-extrabold bg-orange-500 text-white shadow-sm" title="黃昏">🌇<span class="hidden md:inline ml-0.5">黃昏</span></button>
-        <button data-time="night" class="time-btn btn-tap px-1.5 sm:px-2.5 lg:px-3 py-1 lg:py-1.5 rounded-full text-[11px] lg:text-sm font-bold text-slate-700 hover:bg-indigo-100" title="夜晚">🌙<span class="hidden md:inline ml-0.5">夜晚</span></button>
+      <div class="pointer-events-auto glass-bar rounded-full p-1 flex items-center gap-0.5 shrink-0">
+        <button data-time="dawn" class="time-btn btn-tap px-2 py-1 rounded-full text-[11px] lg:text-sm font-bold text-slate-700 hover:bg-amber-100" title="清晨">🌅<span class="hidden md:inline ml-0.5">清晨</span></button>
+        <button data-time="noon" class="time-btn btn-tap px-2 py-1 rounded-full text-[11px] lg:text-sm font-bold text-slate-700 hover:bg-sky-100" title="中午">☀️<span class="hidden md:inline ml-0.5">中午</span></button>
+        <button data-time="sunset" class="time-btn btn-tap px-2 py-1 rounded-full text-[11px] lg:text-sm font-extrabold bg-orange-500 text-white shadow-sm" title="黃昏">🌇<span class="hidden md:inline ml-0.5">黃昏</span></button>
+        <button data-time="night" class="time-btn btn-tap px-2 py-1 rounded-full text-[11px] lg:text-sm font-bold text-slate-700 hover:bg-indigo-100" title="夜晚">🌙<span class="hidden md:inline ml-0.5">夜晚</span></button>
       </div>
 
-      <!-- 右側：浪來 / 點名 / 聲音 / 更多 -->
       <div class="pointer-events-auto flex items-center gap-1 shrink-0">
-        <button id="btnWaveSurge" title="海浪從底邊打上來沖刷字畫" class="btn-tap glass-bar rounded-full px-2 sm:px-3 lg:px-4 py-1 lg:py-1.5 text-xs lg:text-sm font-extrabold text-cyan-800 whitespace-nowrap">
+        <button id="btnWaveSurge" title="海浪從底邊打上來沖刷字畫" class="btn-tap glass-bar rounded-full px-2.5 py-1.5 text-xs lg:text-sm font-extrabold text-cyan-800 whitespace-nowrap">
           🌊<span class="hidden sm:inline ml-1">浪來</span>
         </button>
-        <button id="btnRoster" title="座號點名餵食板" class="btn-tap glass-bar rounded-full px-2 sm:px-3 lg:px-4 py-1 lg:py-1.5 text-xs lg:text-sm font-extrabold text-emerald-800 whitespace-nowrap">
-          📋<span id="fedProgress" class="hidden sm:inline ml-1">0/28</span>
+        <button id="btnRoster" class="btn-tap glass-bar rounded-full px-2.5 py-1.5 text-xs lg:text-sm font-extrabold text-emerald-800 whitespace-nowrap">
+          📋 <span id="fedProgress">0/28</span>
         </button>
-        <button id="btnAudioToggle" title="快速開關聲音" class="btn-tap glass-bar rounded-full px-2 lg:px-3 py-1 lg:py-1.5 text-xs lg:text-sm font-extrabold text-sky-800">
+        <button id="btnAudioToggle" title="快速開關聲音" class="btn-tap glass-bar rounded-full px-2 py-1.5 text-xs lg:text-sm font-extrabold text-sky-800">
           <span id="audioIcon">🔇</span>
         </button>
-        <button id="btnTopFullscreen" title="一鍵切換大屏滿版全螢幕" class="btn-tap glass-bar rounded-full px-2 sm:px-3 lg:px-3.5 py-1 lg:py-1.5 text-xs lg:text-sm font-extrabold text-slate-700 whitespace-nowrap">
+        <button id="btnTopFullscreen" title="一鍵切換大屏滿版" class="btn-tap glass-bar rounded-full px-2.5 py-1.5 text-xs lg:text-sm font-extrabold text-slate-700 whitespace-nowrap">
           ⛶<span class="hidden sm:inline ml-1">滿版</span>
         </button>
         <button id="btnMoreMenu" title="音量、潮汐、生態活動與老師工具" class="btn-tap glass-bar rounded-full w-7 h-7 lg:w-9 lg:h-9 flex items-center justify-center text-xs lg:text-sm font-black text-slate-700">
@@ -113,6 +109,11 @@
         </button>
       </div>
     </header>
+
+    <!-- 純淨滿版模式時的懸浮退出鍵 -->
+    <button id="btnExitZen" class="hidden fixed top-3 right-3 z-30 glass-bar rounded-full px-3 py-1.5 text-xs font-extrabold text-slate-800 shadow-lg">
+      ✕ 退出滿版
+    </button>
 
     <!-- 畫筆粗細浮動條 -->
     <div id="drawToolbar" class="hidden absolute top-14 left-2.5 z-20 glass-bar rounded-full px-2.5 py-1 flex items-center gap-1.5">
@@ -122,14 +123,13 @@
       <button data-size="18" class="brush-size-btn w-6 h-6 rounded-full bg-amber-100 text-amber-900 text-[10px] font-bold">粗</button>
     </div>
 
-    <!-- 更多選單 (獨立音量滑桿、日期潮汐顯示、趣味生態事件觸發、老師工具) -->
+    <!-- 更多選單 -->
     <div id="moreMenu" class="hidden absolute top-14 right-2.5 z-30 glass-bar rounded-2xl p-3.5 w-64 space-y-2.5 text-xs font-bold text-slate-700 max-h-[80dvh] overflow-y-auto">
       <div class="bg-amber-50 px-2.5 py-2 rounded-xl text-center space-y-0.5">
         <div id="dateDisplay" class="text-[11px] text-amber-900 font-extrabold">今日：2026-11-19</div>
         <div id="tideDisplay" class="text-[11px] text-cyan-700 font-bold">🌊 潮汐：計算中...</div>
       </div>
 
-      <!-- 獨立音量調整：海浪聲 & 背景音樂 -->
       <div class="bg-sky-50/80 p-2.5 rounded-xl space-y-2 border border-sky-100">
         <div>
           <div class="flex justify-between items-center mb-1">
@@ -147,7 +147,6 @@
         </div>
       </div>
 
-      <!-- 趣味生態活動手動觸發 (也會定時自動發生) -->
       <div class="space-y-1">
         <div class="text-[11px] text-slate-500 px-1">🎭 寄居蟹趣味互動</div>
         <div class="grid grid-cols-2 gap-1.5">
@@ -212,7 +211,7 @@
       </div>
     </div>
 
-    <!-- 29隻寄居蟹座號快速點名餵食板 -->
+    <!-- 寄居蟹座號快速點名餵食板 -->
     <div id="rosterModal" class="hidden fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5">
       <div class="bg-amber-50 border-2 border-amber-300 rounded-3xl max-w-4xl w-full max-h-[86dvh] flex flex-col shadow-2xl overflow-hidden">
         <div class="px-4 py-3 bg-gradient-to-r from-amber-100 to-orange-100 border-b border-amber-200 flex items-center justify-between">
@@ -234,7 +233,6 @@
           <button id="btnCloseTeacher" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-bold">✕</button>
         </div>
 
-        <!-- 班級與寄居蟹數量設定 -->
         <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 mb-3 space-y-2">
           <div class="text-xs font-extrabold text-amber-900">🏫 班級與寄居蟹數量設定（含 1 隻導師）</div>
           <div class="grid grid-cols-3 gap-2 text-xs">
@@ -256,7 +254,6 @@
           </button>
         </div>
 
-        <!-- 備份與還原（防止教室還原卡清除紀錄） -->
         <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 mb-3 space-y-2">
           <div class="text-xs font-extrabold text-emerald-900">💾 自動存檔與跨電腦備份</div>
           <p class="text-[10px] text-emerald-700 leading-snug">每次餵食與設定都會自動存檔，重開機自動保留；若教室電腦有「重開機還原卡」，可匯出備份檔保存。</p>
@@ -347,7 +344,7 @@
       };
 
       function getShellForCrab(crab) {
-        if (crab.id === 29) return LUXURY_100_SHELLS[0];
+        if (crab.id === getTeacherId()) return LUXURY_100_SHELLS[0];
         if (crab.streak >= 100) {
           return LUXURY_100_SHELLS.find((s) => s.id === crab.dreamShellId) || LUXURY_100_SHELLS[0];
         }
@@ -366,18 +363,15 @@
         return { level: 6, minDays: 100, name: '自選 100 天最高級豪華新家' };
       }
 
-      // 根據日期計算農曆/潮汐水位 (漲潮 vs 退潮，大潮 vs 小潮)
       function getTideInfoForDate(dateStr) {
         const parts = dateStr.split('-').map(Number);
         const d = new Date(parts[0], parts[1] - 1, parts[2]);
         const daysSinceEpoch = Math.floor(d.getTime() / 86400000);
-        // 模擬約 29.5 天的農曆大小潮週期 + 每日潮差位移
-        const lunarPhase = (daysSinceEpoch % 29.53) / 29.53; // 0=朔, 0.5=望
-        const dailyWave = Math.sin((daysSinceEpoch * 2 * Math.PI) / 14.765); // -1 (乾潮/退潮) ~ +1 (滿潮/漲潮)
+        const lunarPhase = (daysSinceEpoch % 29.53) / 29.53;
+        const dailyWave = Math.sin((daysSinceEpoch * 2 * Math.PI) / 14.765);
         const isSpringTide = Math.abs(Math.cos(lunarPhase * Math.PI * 2)) > 0.65;
         let label = dailyWave > 0.35 ? '漲潮 (滿潮)' : (dailyWave < -0.35 ? '退潮 (乾潮)' : '平潮');
         if (isSpringTide) label += ' · 大潮';
-        // 回傳 Z 軸基礎偏移量：正值往底邊退潮，負值往沙灘漲潮
         const zOffset = -dailyWave * 2.8;
         return { label, zOffset, dailyWave };
       }
@@ -493,22 +487,9 @@
           this.waveMasterGain.gain.setTargetAtTime(targetWave, this.ctx.currentTime, 0.15);
         }
 
-        setWaveVolume(val01) {
-          this.init();
-          this.waveVolume = val01;
-          this.applyVolumes();
-        }
-
-        setBgmVolume(val01) {
-          this.init();
-          this.bgmVolume = val01;
-        }
-
-        toggleMute() {
-          this.init();
-          this.muted = !this.muted;
-          this.applyVolumes();
-        }
+        setWaveVolume(val01) { this.init(); this.waveVolume = val01; this.applyVolumes(); }
+        setBgmVolume(val01) { this.init(); this.bgmVolume = val01; }
+        toggleMute() { this.init(); this.muted = !this.muted; this.applyVolumes(); }
 
         _playNote(freq, volume, duration) {
           if (!this.ctx || volume <= 0.001) return;
@@ -572,7 +553,8 @@
         crabs: [],
         activeCrabId: null,
         ecoEvent: null,
-        ecoTimer: 0
+        ecoTimer: 0,
+        zenMode: false
       };
 
       function getTeacherId() {
@@ -654,24 +636,21 @@
       const scene = new THREE.Scene();
       scene.fog = new THREE.Fog('#fdba74', 44, 115);
 
-      const camera = new THREE.PerspectiveCamera(44, window.innerWidth / window.innerHeight, 0.1, 200);
+      const camera = new THREE.PerspectiveCamera(44, (window.innerWidth || 1280) / (window.innerHeight || 720), 0.1, 200);
       const camTarget = new THREE.Vector3(0, 1.2, 1.5);
       const camOffset = new THREE.Vector3(0, 11.5, 20.5);
       camera.position.copy(camTarget).add(camOffset);
       camera.lookAt(camTarget);
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
-      renderer.setClearColor(0xfdba74, 1);
       renderer.setSize(window.innerWidth || 1280, window.innerHeight || 720);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.12;
-      
+      renderer.toneMappingExposure = 1.08;
       container.insertBefore(renderer.domElement, container.firstChild);
 
-      // 天空與天體
       const skyCanvas = document.createElement('canvas');
       skyCanvas.width = 32;
       skyCanvas.height = 512;
@@ -683,31 +662,10 @@
       ));
 
       const celestialBody = new THREE.Mesh(
-        new THREE.SphereGeometry(3.4, 28, 28),
+        new THREE.SphereGeometry(3.2, 24, 24),
         new THREE.MeshBasicMaterial({ color: '#ffedd5', fog: false })
       );
       scene.add(celestialBody);
-
-      // 太陽/月亮柔和散射光暈
-      const glowCanvas = document.createElement('canvas');
-      glowCanvas.width = 128;
-      glowCanvas.height = 128;
-      const glowCtx = glowCanvas.getContext('2d');
-      const glowGrad = glowCtx.createRadialGradient(64, 64, 8, 64, 64, 64);
-      glowGrad.addColorStop(0, 'rgba(255, 245, 220, 0.95)');
-      glowGrad.addColorStop(0.35, 'rgba(253, 186, 116, 0.45)');
-      glowGrad.addColorStop(1, 'rgba(253, 186, 116, 0.0)');
-      glowCtx.fillStyle = glowGrad;
-      glowCtx.fillRect(0, 0, 128, 128);
-      const celestialGlow = new THREE.Sprite(new THREE.SpriteMaterial({
-        map: new THREE.CanvasTexture(glowCanvas),
-        transparent: true,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-        fog: false
-      }));
-      celestialGlow.scale.set(26, 26, 1);
-      scene.add(celestialGlow);
 
       const starGeo = new THREE.BufferGeometry();
       const starPts = [];
@@ -738,7 +696,6 @@
       sunLight.shadow.bias = -0.0005;
       scene.add(sunLight);
 
-      // 沙灘紋理與寫字畫布
       const SAND_W = 58;
       const SAND_D = 32;
       const TEX_SIZE = 1024;
@@ -785,27 +742,8 @@
       }
       sandGeo.computeVertexNormals();
 
-      const sandBumpCanvas = document.createElement('canvas');
-      sandBumpCanvas.width = 512;
-      sandBumpCanvas.height = 512;
-      const sbCtx = sandBumpCanvas.getContext('2d');
-      sbCtx.fillStyle = '#808080';
-      sbCtx.fillRect(0, 0, 512, 512);
-      for (let i = 0; i < 40000; i++) {
-        sbCtx.fillStyle = Math.random() > 0.5 ? '#b8b8b8' : '#4a4a4a';
-        sbCtx.fillRect(Math.random() * 512, Math.random() * 512, 1.5, 1.5);
-      }
-      const sandBumpTex = new THREE.CanvasTexture(sandBumpCanvas);
-      sandBumpTex.wrapS = THREE.RepeatWrapping;
-      sandBumpTex.wrapT = THREE.RepeatWrapping;
-      sandBumpTex.repeat.set(8, 6);
-
       const sandMesh = new THREE.Mesh(sandGeo, new THREE.MeshStandardMaterial({
-        map: sandTexture,
-        bumpMap: sandBumpTex,
-        bumpScale: 0.12,
-        roughness: 0.78,
-        metalness: 0.06
+        map: sandTexture, roughness: 0.72, metalness: 0.08
       }));
       sandMesh.receiveShadow = true;
       scene.add(sandMesh);
@@ -866,14 +804,13 @@
         sandTexture.needsUpdate = true;
       }
 
-      // 上方海岸礁岩、漂流木與植物
       const palmCrowns = [];
       const fireflyGroup = new THREE.Group();
       scene.add(fireflyGroup);
 
       function buildUpperRocksAndPlants() {
-        const rockMat = new THREE.MeshStandardMaterial({ color: '#57534e', flatShading: true });
-        const mossRockMat = new THREE.MeshStandardMaterial({ color: '#44403c', flatShading: true });
+        const rockMat = new THREE.MeshStandardMaterial({ color: '#57534e', roughness: 0.92, flatShading: true });
+        const mossRockMat = new THREE.MeshStandardMaterial({ color: '#44403c', roughness: 0.88, flatShading: true });
 
         [
           [-22, -13, 3.8], [-15, -14.5, 4.6], [-8, -13.5, 3.2], [0, -15, 4.8],
@@ -889,8 +826,7 @@
           scene.add(rock);
         });
 
-        // 漂流木裝飾
-        const logMat = new THREE.MeshStandardMaterial({ color: '#6b4423'});
+        const logMat = new THREE.MeshStandardMaterial({ color: '#6b4423', roughness: 0.95 });
         const driftLog = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.42, 6.2, 10), logMat);
         driftLog.rotation.z = Math.PI / 2 - 0.12;
         driftLog.rotation.y = 0.25;
@@ -898,20 +834,18 @@
         driftLog.castShadow = true;
         scene.add(driftLog);
 
-        // 遠景海蝕柱
         [[-26, -34, 9], [-12, -38, 7], [6, -40, 10], [22, -35, 8.5]].forEach(([px, pz, h], i) => {
           const peak = new THREE.Mesh(
             new THREE.ConeGeometry(h * 0.75, h * 1.4, 7),
-            new THREE.MeshStandardMaterial({ color: '#475569', flatShading: true })
+            new THREE.MeshStandardMaterial({ color: '#475569', roughness: 0.95, flatShading: true })
           );
           peak.position.set(px, h * 0.45, pz);
           peak.rotation.y = i * 0.7;
           scene.add(peak);
         });
 
-        // 棕櫚樹
-        const trunkMat = new THREE.MeshStandardMaterial({ color: '#78350f'});
-        const leafMat = new THREE.MeshStandardMaterial({ color: '#15803d', side: THREE.DoubleSide });
+        const trunkMat = new THREE.MeshStandardMaterial({ color: '#78350f', roughness: 0.9 });
+        const leafMat = new THREE.MeshStandardMaterial({ color: '#15803d', roughness: 0.65, side: THREE.DoubleSide });
         [[-20, -10.5, 1.15], [-11, -12, 0.95], [12, -11.8, 1.05], [21, -10, 1.2]].forEach(([tx, tz, sc], idx) => {
           const tree = new THREE.Group();
           tree.position.set(tx, getSandHeightAt(tx, tz), tz);
@@ -940,8 +874,7 @@
           scene.add(tree);
         });
 
-        // 海岸灌木與花叢
-        const bushMat = new THREE.MeshStandardMaterial({ color: '#166534'});
+        const bushMat = new THREE.MeshStandardMaterial({ color: '#166534', roughness: 0.85 });
         const flowerColors = ['#a855f7', '#ec4899', '#facc15'];
         for (let i = 0; i < 24; i++) {
           const bx = -24 + i * 2.1 + (Math.random() - 0.5);
@@ -952,7 +885,7 @@
           bush.castShadow = true;
           scene.add(bush);
           if (i % 2 === 0) {
-            const fl = new THREE.Mesh(new THREE.SphereGeometry(0.16, 6, 6), new THREE.MeshStandardMaterial({ color: flowerColors[i % 3]}));
+            const fl = new THREE.Mesh(new THREE.SphereGeometry(0.16, 6, 6), new THREE.MeshStandardMaterial({ color: flowerColors[i % 3], roughness: 0.5 }));
             fl.position.set(bx + 0.2, getSandHeightAt(bx, bz) + 0.65, bz + 0.2);
             scene.add(fl);
           }
@@ -970,7 +903,6 @@
       }
       buildUpperRocksAndPlants();
 
-      // 底邊打上來的 3D 海浪
       const waterCanvas = document.createElement('canvas');
       waterCanvas.width = 512;
       waterCanvas.height = 512;
@@ -992,132 +924,74 @@
 
       const waterGeo = new THREE.PlaneGeometry(SAND_W + 16, 28, 64, 24);
       waterGeo.rotateX(-Math.PI / 2);
-      const waterBumpCanvas = document.createElement('canvas');
-      waterBumpCanvas.width = 256;
-      waterBumpCanvas.height = 256;
-      const wbCtx = waterBumpCanvas.getContext('2d');
-      wbCtx.fillStyle = '#808080';
-      wbCtx.fillRect(0, 0, 256, 256);
-      for (let y = 0; y < 256; y += 8) {
-        wbCtx.fillStyle = y % 16 === 0 ? '#a8a8a8' : '#585858';
-        wbCtx.fillRect(0, y, 256, 4);
-      }
-      const waterBumpTex = new THREE.CanvasTexture(waterBumpCanvas);
-      waterBumpTex.wrapS = THREE.RepeatWrapping;
-      waterBumpTex.wrapT = THREE.RepeatWrapping;
-      waterBumpTex.repeat.set(6, 4);
-
       const waterMesh = new THREE.Mesh(waterGeo, new THREE.MeshStandardMaterial({
-        map: waterTexture,
-        bumpMap: waterBumpTex,
-        bumpScale: 0.09,
-        transparent: true,
-        roughness: 0.1,
-        metalness: 0.35
+        map: waterTexture, transparent: true, roughness: 0.12, metalness: 0.25
       }));
       waterMesh.position.set(0, 0.3, 21);
       scene.add(waterMesh);
 
       // ==========================================
-      // 5. 偶爾出現的 3D 海鳥 & 沙灘螃蟹 (支援 ./models/*.glb 輕量化真實模型)
+      // 5. 海鳥與沙灘螃蟹
       // ==========================================
-      const gltfMixers = [];
-      const gltfLoader = typeof THREE.GLTFLoader === 'function' ? new THREE.GLTFLoader() : null;
-
-      function createCurvedWingGeo(side) {
-        const shape = new THREE.Shape();
-        shape.moveTo(0, 0.12);
-        shape.quadraticCurveTo(side * 0.45, 0.22, side * 0.95, 0.02);
-        shape.quadraticCurveTo(side * 0.5, -0.14, 0, -0.12);
-        shape.closePath();
-        const geo = new THREE.ExtrudeGeometry(shape, { depth: 0.025, bevelEnabled: true, bevelThickness: 0.01, bevelSize: 0.01, bevelSegments: 2 });
-        geo.rotateX(Math.PI / 2);
-        return geo;
-      }
-
       const seagulls = [];
       function buildSeagulls() {
-        const bodyMat = new THREE.MeshStandardMaterial({ color: '#f8fafc'});
-        const wingMat = new THREE.MeshStandardMaterial({ color: '#e2e8f0'});
-        const beakMat = new THREE.MeshStandardMaterial({ color: '#f59e0b'});
+        const bodyMat = new THREE.MeshStandardMaterial({ color: '#f8fafc', roughness: 0.5 });
+        const wingMat = new THREE.MeshStandardMaterial({ color: '#cbd5e1', roughness: 0.6, side: THREE.DoubleSide });
+        const beakMat = new THREE.MeshStandardMaterial({ color: '#f59e0b', roughness: 0.4 });
 
         for (let i = 0; i < 3; i++) {
           const bird = new THREE.Group();
-          const fallbackGroup = new THREE.Group();
-          const torso = new THREE.Mesh(new THREE.SphereGeometry(0.2, 14, 10), bodyMat);
-          torso.scale.set(0.75, 0.65, 2.0);
-          const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 10), bodyMat);
-          head.position.set(0, 0.12, 0.36);
-          const beak = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.22, 8), beakMat);
+          const torso = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 8), bodyMat);
+          torso.scale.set(0.8, 0.75, 1.8);
+          const head = new THREE.Mesh(new THREE.SphereGeometry(0.14, 10, 8), bodyMat);
+          head.position.set(0, 0.14, 0.36);
+          const beak = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.22, 6), beakMat);
           beak.rotation.x = Math.PI / 2;
-          beak.position.set(0, 0.1, 0.54);
+          beak.position.set(0, 0.12, 0.54);
 
           const leftWing = new THREE.Group();
-          leftWing.add(new THREE.Mesh(createCurvedWingGeo(-1), wingMat));
-          const rightWing = new THREE.Group();
-          rightWing.add(new THREE.Mesh(createCurvedWingGeo(1), wingMat));
+          const lwMesh = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.03, 0.28), wingMat);
+          lwMesh.position.set(-0.42, 0, 0);
+          leftWing.add(lwMesh);
 
-          fallbackGroup.add(torso, head, beak, leftWing, rightWing);
-          bird.add(fallbackGroup);
+          const rightWing = new THREE.Group();
+          const rwMesh = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.03, 0.28), wingMat);
+          rwMesh.position.set(0.42, 0, 0);
+          rightWing.add(rwMesh);
+
+          bird.add(torso, head, beak, leftWing, rightWing);
           bird.position.set(-28 - i * 14, 7.5 + i * 1.6, -4 + i * 3);
           bird.rotation.y = Math.PI / 2;
           bird.castShadow = true;
           scene.add(bird);
-
-          const entry = {
-            root: bird, fallbackGroup, leftWing, rightWing,
+          seagulls.push({
+            root: bird, leftWing, rightWing,
             speed: 4.5 + i * 0.8,
             phase: i * 2.1,
             cooldown: i * 5
-          };
-          seagulls.push(entry);
-
-          if (gltfLoader) {
-            gltfLoader.load('./models/seagull.glb', (gltf) => {
-              const model = gltf.scene;
-              model.scale.setScalar(0.55);
-              model.traverse((n) => { if (n.isMesh) n.castShadow = true; });
-              bird.remove(fallbackGroup);
-              bird.add(model);
-              if (gltf.animations && gltf.animations.length > 0) {
-                const mixer = new THREE.AnimationMixer(model);
-                mixer.clipAction(gltf.animations[0]).play();
-                gltfMixers.push(mixer);
-              }
-            }, undefined, () => {});
-          }
+          });
         }
       }
       buildSeagulls();
 
       const wildCrabs = [];
       function buildWildSandCrabs() {
-        const shellMat = new THREE.MeshStandardMaterial({ color: '#c2410c'});
-        const legMat = new THREE.MeshStandardMaterial({ color: '#ea580c'});
+        const shellMat = new THREE.MeshStandardMaterial({ color: '#d97706', roughness: 0.5 });
+        const legMat = new THREE.MeshStandardMaterial({ color: '#f59e0b', roughness: 0.55 });
         for (let i = 0; i < 3; i++) {
           const wc = new THREE.Group();
-          const fallbackGroup = new THREE.Group();
-          // 流線橢圓沙蟹甲殼 + 雙眼柄 + 彎曲蟹腳 + 雙螯
-          const body = new THREE.Mesh(new THREE.SphereGeometry(0.24, 14, 10), shellMat);
-          body.scale.set(1.25, 0.45, 0.95);
+          const body = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.14, 0.32), shellMat);
           body.position.y = 0.16;
           body.castShadow = true;
-          fallbackGroup.add(body);
+          wc.add(body);
           for (const sx of [-1, 1]) {
-            const eyeStalk = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.02, 0.12, 6), legMat);
-            eyeStalk.position.set(sx * 0.1, 0.25, 0.16);
-            fallbackGroup.add(eyeStalk);
             for (let l = 0; l < 3; l++) {
-              const upper = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.022, 0.22, 6), legMat);
-              upper.rotation.z = sx * 1.1;
-              upper.position.set(sx * 0.26, 0.16, -0.09 + l * 0.09);
-              const lower = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.018, 0.18, 6), shellMat);
-              lower.rotation.z = sx * 0.25;
-              lower.position.set(sx * 0.37, 0.07, -0.09 + l * 0.09);
-              fallbackGroup.add(upper, lower);
+              const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.025, 0.28, 6), legMat);
+              leg.rotation.z = sx * 0.9;
+              leg.position.set(sx * 0.28, 0.11, -0.1 + l * 0.1);
+              wc.add(leg);
             }
           }
-          wc.add(fallbackGroup);
           wc.position.set(-32, 0.5, 2 + i * 2.5);
           scene.add(wc);
           wildCrabs.push({
@@ -1127,27 +1001,12 @@
             active: false,
             z: 2 + i * 2.5
           });
-
-          if (gltfLoader) {
-            gltfLoader.load('./models/crab.glb', (gltf) => {
-              const model = gltf.scene;
-              model.scale.setScalar(0.45);
-              model.traverse((n) => { if (n.isMesh) n.castShadow = true; });
-              wc.remove(fallbackGroup);
-              wc.add(model);
-              if (gltf.animations && gltf.animations.length > 0) {
-                const mixer = new THREE.AnimationMixer(model);
-                mixer.clipAction(gltf.animations[0]).play();
-                gltfMixers.push(mixer);
-              }
-            }, undefined, () => {});
-          }
         }
       }
       buildWildSandCrabs();
 
       // ==========================================
-      // 6. 寫實 3D 寄居蟹 (老師大 3 倍 + 可縮進殼裡 + Zzz 睡眠氣泡)
+      // 6. 寫實 3D 寄居蟹 (老師大 3 倍 + 動態班級人數)
       // ==========================================
       const crabGroups = [];
       const crabHitMeshes = [];
@@ -1209,10 +1068,8 @@
         const shellTex = createStriatedShellTexture(shellSpec.main, shellSpec.band);
         const mainMat = new THREE.MeshStandardMaterial({
           map: shellTex,
-          bumpMap: shellTex,
-          bumpScale: 0.06,
-          roughness: shellSpec.level >= 6 ? 0.22 : 0.42,
-          metalness: shellSpec.level >= 6 ? 0.38 : 0.08
+          roughness: shellSpec.level >= 6 ? 0.25 : 0.48,
+          metalness: shellSpec.level >= 6 ? 0.35 : 0.08
         });
 
         [
@@ -1222,7 +1079,7 @@
           { r: 0.17, pos: [0.31, 0.62, -0.45] },
           { r: 0.10, pos: [0.36, 0.66, -0.52] }
         ].forEach((w) => {
-          const m = new THREE.Mesh(new THREE.SphereGeometry(w.r, 20, 16), mainMat);
+          const m = new THREE.Mesh(new THREE.SphereGeometry(w.r, 18, 14), mainMat);
           m.position.set(w.pos[0], w.pos[1], w.pos[2]);
           m.scale.set(1.06, 0.92, 1.15);
           m.castShadow = true;
@@ -1231,8 +1088,8 @@
         });
 
         const lip = new THREE.Mesh(
-          new THREE.TorusGeometry(0.28, 0.065, 10, 22),
-          new THREE.MeshStandardMaterial({ color: shellSpec.lip})
+          new THREE.TorusGeometry(0.28, 0.065, 10, 20),
+          new THREE.MeshStandardMaterial({ color: shellSpec.lip, roughness: 0.38 })
         );
         lip.position.set(-0.04, 0.25, 0.24);
         lip.rotation.x = 0.45;
@@ -1240,7 +1097,7 @@
         shellGroup.add(lip);
 
         if (shellSpec.level >= 5) {
-          const spikeMat = new THREE.MeshStandardMaterial({ color: shellSpec.band});
+          const spikeMat = new THREE.MeshStandardMaterial({ color: shellSpec.band, roughness: 0.3, metalness: 0.3 });
           for (let i = 0; i < 5; i++) {
             const spike = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.24, 8), spikeMat);
             const a = (i / 5) * Math.PI * 2;
@@ -1263,59 +1120,34 @@
         return shellGroup;
       }
 
-      const SHARED_CRAB_GEO = {
-        thorax: new THREE.SphereGeometry(0.24, 12, 10),
-        leftArm: new THREE.CylinderGeometry(0.055, 0.065, 0.32, 7),
-        leftPincer: new THREE.SphereGeometry(0.14, 10, 8),
-        dot: new THREE.SphereGeometry(0.025, 5, 5),
-        rightArm: new THREE.CylinderGeometry(0.04, 0.05, 0.28, 7),
-        rightPincer: new THREE.SphereGeometry(0.095, 8, 7),
-        upperLeg: new THREE.CylinderGeometry(0.038, 0.045, 0.34, 6),
-        lowerLeg: new THREE.CylinderGeometry(0.02, 0.036, 0.28, 6),
-        stalk: new THREE.CylinderGeometry(0.018, 0.024, 0.17, 6),
-        eye: new THREE.SphereGeometry(0.044, 8, 8),
-        ant: new THREE.CylinderGeometry(0.005, 0.012, 0.42, 5),
-        hit: new THREE.SphereGeometry(1.0, 6, 6)
-      };
-      const SHARED_CRAB_MAT = {
-        teacherBody: new THREE.MeshStandardMaterial({ color: '#ea580c'}),
-        teacherLeg: new THREE.MeshStandardMaterial({ color: '#f97316'}),
-        boyBody: new THREE.MeshStandardMaterial({ color: '#0284c7'}),
-        boyLeg: new THREE.MeshStandardMaterial({ color: '#38bdf8'}),
-        girlBody: new THREE.MeshStandardMaterial({ color: '#e11d48'}),
-        girlLeg: new THREE.MeshStandardMaterial({ color: '#fb7185'}),
-        bump: new THREE.MeshStandardMaterial({ color: '#fef3c7'}),
-        eye: SHARED_CRAB_MAT.eye,
-        hit: new THREE.MeshBasicMaterial({ visible: false })
-      };
-
       function buildRealistic3DHermitCrab(crabData, index) {
         const root = new THREE.Group();
         const isTeacher = crabData.role === 'teacher';
         const isBoy = crabData.role === 'boy';
 
-        const bodyMat = isTeacher ? SHARED_CRAB_MAT.teacherBody : (isBoy ? SHARED_CRAB_MAT.boyBody : SHARED_CRAB_MAT.girlBody);
-        const legMat = isTeacher ? SHARED_CRAB_MAT.teacherLeg : (isBoy ? SHARED_CRAB_MAT.boyLeg : SHARED_CRAB_MAT.girlLeg);
-        const bumpMat = SHARED_CRAB_MAT.bump;
+        const crabColor = isTeacher ? '#ea580c' : (isBoy ? '#0284c7' : '#e11d48');
+        const legColor = isTeacher ? '#f97316' : (isBoy ? '#38bdf8' : '#fb7185');
+        const bodyMat = new THREE.MeshStandardMaterial({ color: crabColor, roughness: 0.42 });
+        const legMat = new THREE.MeshStandardMaterial({ color: legColor, roughness: 0.48 });
+        const bumpMat = new THREE.MeshStandardMaterial({ color: '#fef3c7', roughness: 0.5 });
 
-        // 可縮進殼裡的身體群組 (睡覺/躲藏時會縮進去！)
         const bodyGroup = new THREE.Group();
 
-        const thorax = new THREE.Mesh(SHARED_CRAB_GEO.thorax, bodyMat);
+        const thorax = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 10), bodyMat);
         thorax.scale.set(1.1, 0.78, 1.25);
         thorax.position.set(0, 0.2, 0.32);
         thorax.castShadow = true;
         bodyGroup.add(thorax);
 
         const leftClawGroup = new THREE.Group();
-        const leftArm = new THREE.Mesh(SHARED_CRAB_GEO.leftArm, legMat);
+        const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.065, 0.32, 8), legMat);
         leftArm.rotation.x = Math.PI / 3;
         leftArm.position.set(-0.18, 0.16, 0.52);
-        const leftPincer = new THREE.Mesh(SHARED_CRAB_GEO.leftPincer, bodyMat);
+        const leftPincer = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 10), bodyMat);
         leftPincer.scale.set(0.85, 0.72, 1.38);
         leftPincer.position.set(-0.2, 0.12, 0.68);
         for (let b = 0; b < 4; b++) {
-          const dot = new THREE.Mesh(SHARED_CRAB_GEO.dot, bumpMat);
+          const dot = new THREE.Mesh(new THREE.SphereGeometry(0.025, 6, 6), bumpMat);
           dot.position.set(-0.2 + (b - 1.5) * 0.04, 0.19, 0.65 + (b % 2) * 0.05);
           leftClawGroup.add(dot);
         }
@@ -1323,10 +1155,10 @@
         bodyGroup.add(leftClawGroup);
 
         const rightClawGroup = new THREE.Group();
-        const rightArm = new THREE.Mesh(SHARED_CRAB_GEO.rightArm, legMat);
+        const rightArm = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.28, 8), legMat);
         rightArm.rotation.x = Math.PI / 3;
         rightArm.position.set(0.16, 0.16, 0.48);
-        const rightPincer = new THREE.Mesh(SHARED_CRAB_GEO.rightPincer, bodyMat);
+        const rightPincer = new THREE.Mesh(new THREE.SphereGeometry(0.095, 10, 8), bodyMat);
         rightPincer.scale.set(0.8, 0.65, 1.3);
         rightPincer.position.set(0.18, 0.12, 0.62);
         rightClawGroup.add(rightArm, rightPincer);
@@ -1336,10 +1168,10 @@
         for (const side of [-1, 1]) {
           for (let l = 0; l < 2; l++) {
             const legGroup = new THREE.Group();
-            const upper = new THREE.Mesh(SHARED_CRAB_GEO.upperLeg, legMat);
+            const upper = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.045, 0.34, 8), legMat);
             upper.rotation.z = side * 0.85;
             upper.position.set(side * 0.28, 0.22, 0.28 - l * 0.18);
-            const lower = new THREE.Mesh(SHARED_CRAB_GEO.lowerLeg, bodyMat);
+            const lower = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.036, 0.28, 8), bodyMat);
             lower.rotation.z = side * 0.2;
             lower.position.set(side * 0.45, 0.09, 0.28 - l * 0.18);
             legGroup.add(upper, lower);
@@ -1348,14 +1180,14 @@
           }
         }
 
-        const eyeMat = SHARED_CRAB_MAT.eye;
+        const eyeMat = new THREE.MeshStandardMaterial({ color: '#0f172a', roughness: 0.08, metalness: 0.4 });
         for (const ex of [-0.09, 0.09]) {
-          const stalk = new THREE.Mesh(SHARED_CRAB_GEO.stalk, legMat);
+          const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.024, 0.17, 8), legMat);
           stalk.position.set(ex, 0.35, 0.48);
           stalk.rotation.x = 0.25;
-          const eye = new THREE.Mesh(SHARED_CRAB_GEO.eye, eyeMat);
+          const eye = new THREE.Mesh(new THREE.SphereGeometry(0.044, 10, 10), eyeMat);
           eye.position.set(ex, 0.44, 0.51);
-          const ant = new THREE.Mesh(SHARED_CRAB_GEO.ant, legMat);
+          const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.012, 0.42, 6), legMat);
           ant.position.set(ex * 1.4, 0.4, 0.62);
           ant.rotation.x = 0.85;
           ant.rotation.z = ex > 0 ? -0.25 : 0.25;
@@ -1368,19 +1200,17 @@
         shellHolder.add(build3DShellGroup(getShellForCrab(crabData), crabData.id, isTeacher, crabData.role));
         root.add(shellHolder);
 
-        // 狀態小圖示 (💤 睡覺 / 🛑 定格)
         const statusSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: sleepTex, transparent: true, opacity: 0 }));
         statusSprite.scale.set(0.55, 0.55, 1);
         statusSprite.position.set(0.45, 1.15, 0);
         root.add(statusSprite);
 
-        const hitMesh = new THREE.Mesh(SHARED_CRAB_GEO.hit, SHARED_CRAB_MAT.hit);
+        const hitMesh = new THREE.Mesh(new THREE.SphereGeometry(1.0, 8, 8), new THREE.MeshBasicMaterial({ visible: false }));
         hitMesh.position.set(0, 0.45, 0.1);
         hitMesh.userData = { crabId: crabData.id };
         root.add(hitMesh);
         crabHitMeshes.push(hitMesh);
 
-        // 老師外型大 3 倍！學生依班級人數自動均勻分布
         let homeX, homeZ;
         if (isTeacher) {
           homeX = 0;
@@ -1441,13 +1271,11 @@
       }
 
       // ==========================================
-      // 7. 生態行為系統 (依時段 & 趣味群體活動)
+      // 7. 生態行為與沙灘線條排隊
       // ==========================================
       function triggerEcoEvent(eventName) {
         state.ecoEvent = eventName;
-        state.ecoTimer = 14; // 每次活動持續 14 秒
-
-        // 先重置狀態
+        state.ecoTimer = 14;
         crabGroups.forEach((cg) => {
           cg.targetYOffset = 0;
           cg.tucked = false;
@@ -1456,7 +1284,7 @@
         });
 
         if (eventName === 'freezeGame') {
-          showToast('🛑 123 木頭人！29 號老師喊停，大家快定格！');
+          showToast('🛑 123 木頭人！老師喊停，大家快定格！');
           crabGroups.forEach((cg, idx) => {
             if (cg.role === 'teacher') {
               cg.targetX = 0;
@@ -1528,7 +1356,6 @@
           cg.statusSprite.material.opacity = 0;
 
           if (state.timeOfDay === 'night') {
-            // 夜晚大部分躲進殼裡睡覺
             cg.tucked = cg.role !== 'teacher' && idx % 5 !== 0;
             if (cg.tucked) {
               cg.statusSprite.material.map = sleepTex;
@@ -1538,6 +1365,56 @@
             cg.tucked = false;
           }
         });
+      }
+
+      function assignCrabsToSandStrokes() {
+        const studentCrabs = crabGroups.filter((cg) => cg.role !== 'teacher');
+        if (studentCrabs.length === 0) return;
+
+        const segments = [];
+        let totalLen = 0;
+        for (const st of sandStrokes) {
+          for (let i = 1; i < st.points.length; i++) {
+            const p0 = st.points[i - 1];
+            const p1 = st.points[i];
+            if (p1.alpha <= 0.1 || p0.wx === undefined || p1.wx === undefined) continue;
+            const d = Math.hypot(p1.wx - p0.wx, p1.wz - p0.wz);
+            if (d > 0.05) {
+              segments.push({ p0, p1, len: d });
+              totalLen += d;
+            }
+          }
+        }
+        if (totalLen < 1.2 || segments.length === 0) return;
+
+        const count = Math.min(studentCrabs.length, Math.max(3, Math.round(totalLen / 1.9)));
+        state.ecoEvent = 'sandFormation';
+        state.ecoTimer = 24;
+
+        for (let k = 0; k < count; k++) {
+          const targetDist = (k / Math.max(1, count - 1)) * totalLen;
+          let acc = 0;
+          let chosen = segments[segments.length - 1].p1;
+          for (const seg of segments) {
+            if (acc + seg.len >= targetDist) {
+              const ratio = (targetDist - acc) / seg.len;
+              chosen = {
+                wx: seg.p0.wx + (seg.p1.wx - seg.p0.wx) * ratio,
+                wz: seg.p0.wz + (seg.p1.wz - seg.p0.wz) * ratio
+              };
+              break;
+            }
+            acc += seg.len;
+          }
+          const cg = studentCrabs[k];
+          cg.targetX = chosen.wx;
+          cg.targetZ = chosen.wz;
+          cg.targetYOffset = 0;
+          cg.tucked = false;
+          cg.frozen = false;
+          cg.statusSprite.material.opacity = 0;
+        }
+        showToast(`🦀 有 ${count} 隻寄居蟹沿著你的線條排隊站好囉！`);
       }
 
       document.querySelectorAll('.eco-event-btn').forEach((btn) => {
@@ -1569,7 +1446,6 @@
         sunLight.intensity = th.sunIntensity;
         celestialBody.material.color.set(th.sunColor);
         celestialBody.position.set(th.sunPos[0] * 2.2, th.sunPos[1] * 1.4, th.sunPos[2] * 2.2);
-        celestialGlow.position.copy(celestialBody.position);
 
         hemiLight.color.set(th.hemiSky);
         hemiLight.groundColor.set(th.hemiGround);
@@ -1582,8 +1458,8 @@
 
         document.querySelectorAll('.time-btn').forEach((btn) => {
           btn.className = btn.dataset.time === timeKey
-            ? 'time-btn btn-tap px-2 py-1 rounded-full text-[11px] font-extrabold bg-orange-500 text-white shadow-sm'
-            : 'time-btn btn-tap px-2 py-1 rounded-full text-[11px] font-bold text-slate-700 hover:bg-amber-100';
+            ? 'time-btn btn-tap px-2 py-1 rounded-full text-[11px] lg:text-sm font-extrabold bg-orange-500 text-white shadow-sm'
+            : 'time-btn btn-tap px-2 py-1 rounded-full text-[11px] lg:text-sm font-bold text-slate-700 hover:bg-amber-100';
         });
       }
 
@@ -1626,59 +1502,6 @@
           };
         }
         return null;
-      }
-
-      // 讓寄居蟹依據沙灘線條/圓圈大小，沿著線條排隊站好！
-      function assignCrabsToSandStrokes() {
-        const studentCrabs = crabGroups.filter((cg) => cg.role !== 'teacher');
-        if (studentCrabs.length === 0) return;
-
-        // 蒐集目前所有可見筆跡的 3D 採樣點與總長度
-        const segments = [];
-        let totalLen = 0;
-        for (const st of sandStrokes) {
-          for (let i = 1; i < st.points.length; i++) {
-            const p0 = st.points[i - 1];
-            const p1 = st.points[i];
-            if (p1.alpha <= 0.1 || p0.wx === undefined || p1.wx === undefined) continue;
-            const d = Math.hypot(p1.wx - p0.wx, p1.wz - p0.wz);
-            if (d > 0.05) {
-              segments.push({ p0, p1, len: d });
-              totalLen += d;
-            }
-          }
-        }
-        if (totalLen < 1.2 || segments.length === 0) return;
-
-        // 依線條/圓圈大小決定多少隻寄居蟹走過去排隊 (每約 1.9 單位長排 1 隻)
-        const count = Math.min(studentCrabs.length, Math.max(3, Math.round(totalLen / 1.9)));
-        state.ecoEvent = 'sandFormation';
-        state.ecoTimer = 24;
-
-        for (let k = 0; k < count; k++) {
-          const targetDist = (k / Math.max(1, count - 1)) * totalLen;
-          let acc = 0;
-          let chosen = segments[segments.length - 1].p1;
-          for (const seg of segments) {
-            if (acc + seg.len >= targetDist) {
-              const ratio = (targetDist - acc) / seg.len;
-              chosen = {
-                wx: seg.p0.wx + (seg.p1.wx - seg.p0.wx) * ratio,
-                wz: seg.p0.wz + (seg.p1.wz - seg.p0.wz) * ratio
-              };
-              break;
-            }
-            acc += seg.len;
-          }
-          const cg = studentCrabs[k];
-          cg.targetX = chosen.wx;
-          cg.targetZ = chosen.wz;
-          cg.targetYOffset = 0;
-          cg.tucked = false;
-          cg.frozen = false;
-          cg.statusSprite.material.opacity = 0;
-        }
-        showToast(`🦀 有 ${count} 隻寄居蟹沿著你的線條排隊站好囉！`);
       }
 
       function onDown(clientX, clientY) {
@@ -1762,7 +1585,7 @@
       }, { passive: false });
 
       // ==========================================
-      // 10. 動畫主迴圈 (潮汐海浪 + 海鳥 + 沙蟹 + 寄居蟹生態行為)
+      // 10. 動畫主迴圈
       // ==========================================
       const clock = new THREE.Clock();
       let autoEventClock = 0;
@@ -1771,15 +1594,11 @@
         requestAnimationFrame(animate);
         const dt = Math.min(clock.getDelta(), 0.05);
         const t = clock.elapsedTime;
-        gltfMixers.forEach((m) => m.update(dt));
-        if (state.ecoEvent === 'sandFormation' && sandStrokes.length === 0) {
-          resetToTimeOfDayBehavior();
-        }
 
-        // 自動生態事件輪播 (每 20 秒觸發一個小插曲)
         if (state.ecoEvent) {
           state.ecoTimer -= dt;
           if (state.ecoTimer <= 0) resetToTimeOfDayBehavior();
+          if (state.ecoEvent === 'sandFormation' && sandStrokes.length === 0) resetToTimeOfDayBehavior();
         } else {
           autoEventClock += dt;
           if (autoEventClock > 22) {
@@ -1791,7 +1610,6 @@
           }
         }
 
-        // 潮汐與海浪位置 (依日期潮汐 + 浪花拍打 + 手動沖刷)
         state.waveSurgeBoost += (state.waveSurgeTarget - state.waveSurgeBoost) * 0.035;
         if (state.waveSurgeTarget > 0 && state.waveSurgeBoost > state.waveSurgeTarget - 0.025) {
           state.waveSurgeTarget = 0;
@@ -1811,8 +1629,6 @@
           wPos.setY(i, Math.sin(wx * 0.35 + t * 1.6) * 0.09 + Math.cos(wz * 0.4 + t * 1.2) * 0.06);
         }
         wPos.needsUpdate = true;
-        waterBumpTex.offset.y -= dt * 0.18;
-        waterBumpTex.offset.x += dt * 0.03;
 
         if (sandDirty || sandStrokes.length > 0) {
           redrawSandCanvas(currentWaveFrontZ);
@@ -1822,7 +1638,6 @@
         palmCrowns.forEach((crown, i) => { crown.rotation.z = Math.sin(t * 1.1 + i) * 0.05; });
         fireflyGroup.children.forEach((ff) => { ff.position.y = ff.userData.baseY + Math.sin(t * 1.8 + ff.userData.phase) * 0.35; });
 
-        // 海鳥偶爾飛過天空
         seagulls.forEach((b) => {
           if (b.cooldown > 0) {
             b.cooldown -= dt;
@@ -1831,11 +1646,9 @@
             b.root.visible = true;
             b.root.position.x += b.speed * dt;
             b.root.position.y += Math.sin(t * 2 + b.phase) * 0.015;
-            if (b.fallbackGroup.parent === b.root) {
-              const flap = Math.sin(t * 9 + b.phase) * 0.45;
-              b.leftWing.rotation.z = flap;
-              b.rightWing.rotation.z = -flap;
-            }
+            const flap = Math.sin(t * 9 + b.phase) * 0.45;
+            b.leftWing.rotation.z = flap;
+            b.rightWing.rotation.z = -flap;
             if (b.root.position.x > 34) {
               b.root.position.x = -34;
               b.cooldown = 8 + Math.random() * 14;
@@ -1843,7 +1656,6 @@
           }
         });
 
-        // 野生沙灘螃蟹偶爾橫著快跑
         wildCrabs.forEach((wc) => {
           if (!wc.active) {
             wc.timer -= dt;
@@ -1863,12 +1675,9 @@
           }
         });
 
-        // 29 隻寄居蟹移動、縮進殼裡與動畫
         for (const cg of crabGroups) {
-          const destX = cg.targetX;
-          const destZ = cg.targetZ;
-          cg.root.position.x += (destX - cg.root.position.x) * 0.03;
-          cg.root.position.z += (destZ - cg.root.position.z) * 0.03;
+          cg.root.position.x += (cg.targetX - cg.root.position.x) * 0.03;
+          cg.root.position.z += (cg.targetZ - cg.root.position.z) * 0.03;
 
           const baseH = getSandHeightAt(cg.root.position.x, cg.root.position.z) + cg.targetYOffset;
           if (cg.happyTimer > 0) {
@@ -1878,7 +1687,6 @@
             cg.root.position.y += (baseH - cg.root.position.y) * 0.1;
           }
 
-          // 縮進殼裡 (睡覺/躲藏)
           const targetScale = cg.tucked ? 0.12 : 1.0;
           const targetZ = cg.tucked ? -0.26 : 0;
           cg.bodyGroup.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.12);
@@ -1898,7 +1706,7 @@
       }
 
       // ==========================================
-      // 11. 餵食、點名與 UI 控制
+      // 11. 餵食、點名與 UI 控制 (含 滿版全螢幕 & 純淨展示雙重支援)
       // ==========================================
       function showToast(text) {
         document.getElementById('toastText').textContent = text;
@@ -2082,15 +1890,15 @@
       function setTool(tool) {
         state.tool = tool;
         if (tool === 'interact') {
-          btnToolInteract.className = 'btn-tap px-2 sm:px-2.5 py-1 rounded-full text-xs font-extrabold bg-amber-500 text-white shadow-sm whitespace-nowrap';
-          btnToolDraw.className = 'btn-tap px-2 sm:px-2.5 py-1 rounded-full text-xs font-extrabold text-amber-900 hover:bg-amber-100 whitespace-nowrap';
+          btnToolInteract.className = 'btn-tap px-2.5 py-1 rounded-full text-xs lg:text-sm font-extrabold bg-amber-500 text-white shadow-sm whitespace-nowrap';
+          btnToolDraw.className = 'btn-tap px-2.5 py-1 rounded-full text-xs lg:text-sm font-extrabold text-amber-900 hover:bg-amber-100 whitespace-nowrap';
           drawToolbar.classList.add('hidden');
           showToast('拖曳可瀏覽沙灘，點選寄居蟹可餵食升級！');
         } else {
-          btnToolDraw.className = 'btn-tap px-2.5 py-1 rounded-full text-xs font-extrabold bg-amber-500 text-white shadow-sm whitespace-nowrap';
-          btnToolInteract.className = 'btn-tap px-2.5 py-1 rounded-full text-xs font-extrabold text-amber-900 hover:bg-amber-100 whitespace-nowrap';
+          btnToolDraw.className = 'btn-tap px-2.5 py-1 rounded-full text-xs lg:text-sm font-extrabold bg-amber-500 text-white shadow-sm whitespace-nowrap';
+          btnToolInteract.className = 'btn-tap px-2.5 py-1 rounded-full text-xs lg:text-sm font-extrabold text-amber-900 hover:bg-amber-100 whitespace-nowrap';
           drawToolbar.classList.remove('hidden');
-          showToast('在沙灘寫字至少停留 20 秒，點「🌊 浪來」可立即沖刷！');
+          showToast('在沙灘寫字至少停留 20 秒，寄居蟹還會沿著線條排隊喔！');
         }
       }
 
@@ -2114,7 +1922,6 @@
         showToast('🌊 海浪從底邊湧上來了！沙灘上的字畫正在慢慢消失...');
       });
 
-      // 獨立音量滑桿與靜音按鈕
       const waveVolSlider = document.getElementById('waveVolSlider');
       const bgmVolSlider = document.getElementById('bgmVolSlider');
       const waveVolLabel = document.getElementById('waveVolLabel');
@@ -2168,26 +1975,46 @@
         moreMenu.classList.add('hidden');
       });
 
+      // 雙重滿版機制：支援瀏覽器原生全螢幕 (GitHub Pages 大屏) + 預覽框純淨滿版切換
+      function applyZenUI(enable) {
+        state.zenMode = enable;
+        document.getElementById('mainHeader').classList.toggle('hidden', enable);
+        document.getElementById('bottomToast').classList.toggle('hidden', enable);
+        document.getElementById('btnExitZen').classList.toggle('hidden', !enable);
+      }
+
       function toggleFullscreen() {
         moreMenu.classList.add('hidden');
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen().catch(() => {});
+        const el = document.documentElement;
+        const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+        if (!fsEl && !state.zenMode) {
+          applyZenUI(true);
+          const req = el.requestFullscreen || el.webkitRequestFullscreen;
+          if (req) {
+            Promise.resolve(req.call(el)).catch(() => {});
+          }
         } else {
-          document.exitFullscreen().catch(() => {});
+          applyZenUI(false);
+          const exit = document.exitFullscreen || document.webkitExitFullscreen;
+          if (fsEl && exit) {
+            Promise.resolve(exit.call(document)).catch(() => {});
+          }
         }
       }
+
       document.getElementById('btnFullscreen').addEventListener('click', toggleFullscreen);
       document.getElementById('btnTopFullscreen').addEventListener('click', toggleFullscreen);
+      document.getElementById('btnExitZen').addEventListener('click', toggleFullscreen);
       document.addEventListener('fullscreenchange', () => {
-        const isFs = !!document.fullscreenElement;
-        const topFs = document.getElementById('btnTopFullscreen');
-        topFs.innerHTML = isFs
-          ? '✕<span class="hidden sm:inline ml-1">退出</span>'
-          : '⛶<span class="hidden sm:inline ml-1">滿版</span>';
+        if (!document.fullscreenElement && state.zenMode) {
+          applyZenUI(false);
+        }
         setTimeout(() => {
-          camera.aspect = window.innerWidth / window.innerHeight;
+          const w = window.innerWidth || 1280;
+          const h = window.innerHeight || 720;
+          camera.aspect = w / h;
           camera.updateProjectionMatrix();
-          renderer.setSize(window.innerWidth, window.innerHeight);
+          renderer.setSize(w, h);
         }, 100);
       });
 
@@ -2197,6 +2024,9 @@
         document.getElementById('inputBoyCount').value = state.boyCount;
         document.getElementById('inputGirlCount').value = state.girlCount;
         document.getElementById('teacherModal').classList.remove('hidden');
+      });
+      document.getElementById('btnCloseTeacher').addEventListener('click', () => {
+        document.getElementById('teacherModal').classList.add('hidden');
       });
 
       document.getElementById('btnApplyClassSize').addEventListener('click', () => {
@@ -2239,8 +2069,7 @@
         const reader = new FileReader();
         reader.onload = () => {
           try {
-            const parsed = JSON.parse(reader.result);
-            applyLoadedData(parsed);
+            applyLoadedData(JSON.parse(reader.result));
             saveState();
             rebuildSceneCrabs();
             applyTimeOfDay(state.timeOfDay);
@@ -2248,14 +2077,11 @@
             document.getElementById('teacherModal').classList.add('hidden');
             showToast('📥 備份紀錄已成功匯入並恢復！');
           } catch (err) {
-            showToast('⚠️ 備份檔格式不正確，請確認檔案！');
+            showToast('⚠️ 備份檔格式不正確！');
           }
         };
         reader.readAsText(file);
         e.target.value = '';
-      });
-      document.getElementById('btnCloseTeacher').addEventListener('click', () => {
-        document.getElementById('teacherModal').classList.add('hidden');
       });
 
       document.getElementById('btnSimNextDay').addEventListener('click', () => {
@@ -2306,39 +2132,25 @@
       });
 
       window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
+        const w = window.innerWidth || 1280;
+        const h = window.innerHeight || 720;
+        camera.aspect = w / h;
         camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setSize(w, h);
       });
 
-      function startApp() {
-        try {
-          const w = window.innerWidth || document.documentElement.clientWidth || 360;
-          const h = window.innerHeight || document.documentElement.clientHeight || 640;
-          camera.aspect = w / h;
-          camera.updateProjectionMatrix();
-          renderer.setSize(w, h);
-
-          loadState();
-          state.crabs.forEach((c, idx) => buildRealistic3DHermitCrab(c, idx));
-          applyTimeOfDay(state.timeOfDay);
-          waveVolSlider.value = Math.round(audio.waveVolume * 100);
-          waveVolLabel.textContent = `${waveVolSlider.value}%`;
-          bgmVolSlider.value = Math.round(audio.bgmVolume * 100);
-          bgmVolLabel.textContent = `${bgmVolSlider.value}%`;
-          updateHeaderStats();
-          updateAudioUI();
-          animate();
-        } catch (err) {
-          showToast('⚠️ 畫面載入異常：' + (err && err.message ? err.message : 'WebGL'));
-        }
-      }
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', startApp);
-      } else {
-        startApp();
-      }
+      window.onload = () => {
+        loadState();
+        state.crabs.forEach((c, idx) => buildRealistic3DHermitCrab(c, idx));
+        applyTimeOfDay(state.timeOfDay);
+        waveVolSlider.value = Math.round(audio.waveVolume * 100);
+        waveVolLabel.textContent = `${waveVolSlider.value}%`;
+        bgmVolSlider.value = Math.round(audio.bgmVolume * 100);
+        bgmVolLabel.textContent = `${bgmVolSlider.value}%`;
+        updateHeaderStats();
+        updateAudioUI();
+        animate();
+      };
     })();
   </script>
 </body>
